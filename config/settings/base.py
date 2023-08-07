@@ -34,6 +34,7 @@ SYSTEM_APPS = [
 
 CUSTOM_APPS = [
     "users.apps.UsersConfig",
+    "posters.apps.PostersConfig",
 ]
 
 THRID_PARTY_APPS = [
