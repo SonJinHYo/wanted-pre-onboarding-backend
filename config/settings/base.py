@@ -33,7 +33,7 @@ SYSTEM_APPS = [
 ]
 
 CUSTOM_APPS = [
-    "users.apps.UsersComfig",
+    "users.apps.UsersConfig",
 ]
 
 THRID_PARTY_APPS = [
