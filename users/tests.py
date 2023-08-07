@@ -1,9 +1,12 @@
-from django.test import TestCase
+from django.test import TestCase, modify_settings
 
-from rest_framework.test import APITestCase
+from rest_framework.test import APITestCase, APIClient
 from rest_framework import status
 from django.urls import reverse
-from django.contrib.auth.models import User
+from .models import User
+
+import os
+import jwt
 
 
 class SignInTestCase(APITestCase):
@@ -25,20 +28,31 @@ class SignInTestCase(APITestCase):
     def test_signup(self):
         test_cases = [
             {
-                "data": {"email": "test@example.com", "password": "securepassword"},
+                "data": {
+                    "email": "test@example.com",
+                    "password": "securepassword",
+                },
                 "expected_status": status.HTTP_200_OK,
                 "expected_message": "회원가입 완료",
             },
             {
-                "data": {"email": "test@example.com"},
+                "data": {
+                    "email": "test@example.com",
+                },
                 "expected_status": status.HTTP_400_BAD_REQUEST,
             },
             {
-                "data": {"email": "test@example.com", "password": "122"},
+                "data": {
+                    "email": "test@example.com",
+                    "password": "122",
+                },
                 "expected_status": status.HTTP_400_BAD_REQUEST,
             },
             {
-                "data": {"email": "testexample.com", "password": "122"},
+                "data": {
+                    "email": "testfail.com",
+                    "password": "12121212",
+                },
                 "expected_status": status.HTTP_400_BAD_REQUEST,
             },
         ]
@@ -53,3 +67,43 @@ class SignInTestCase(APITestCase):
                 self.assertTrue(
                     User.objects.filter(email=case["data"]["email"]).exists()
                 )
+
+
+class JWTLogInTestCase(APITestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.url = reverse("jwtlogin")
+        self.user = User.objects.create_user(
+            username=" ",
+            email="test@example.com",
+            password="securepassword",
+        )
+        self.django_key = os.environ.get("DJANGO_SECRET_KEY")
+
+    def test_successful_login(self):
+        data = {
+            "email": "test@example.com",
+            "password": "securepassword",
+        }
+
+        response = self.client.post(self.url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("token", response.data)
+
+    def test_failed_login(self):
+        data = {
+            "email": "test@example.com",
+            "password": "wrongpassword",
+        }
+
+        response = self.client.post(self.url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("error", response.data)
+
+    def test_missing_fields(self):
+        data = {
+            "email": "test@example.com",
+        }
+
+        response = self.client.post(self.url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

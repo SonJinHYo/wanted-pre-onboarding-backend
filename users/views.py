@@ -34,12 +34,18 @@ class SignIn(APIView):
 
 
 class JWTLogIn(APIView):
+    def generate_token(self, user):
+        payload = {"pk": user.pk}
+        key = os.environ.get("DJANGO_SECRET_KEY")
+        token = jwt.encode(payload=payload, key=key, algorithm="HS256")
+        return token
+
     def post(self, request):
         email = request.data.get("email")
         password = request.data.get("password")
 
         if not email or not password:
-            raise exceptions.ParseError
+            raise exceptions.ParseError("email과 password를 모두 입력해주세요.")
 
         user = authenticate(
             request,
@@ -48,14 +54,10 @@ class JWTLogIn(APIView):
         )
 
         if user:
-            token = jwt.encode(
-                payload={"pk": user.pk},
-                key=os.environ.get("DJANGO_SECRET_KEY"),
-                algorithm="HS256",
-            )
+            token = self.generate_token(user)
             return Response({"token": token}, status=status.HTTP_200_OK)
         else:
             return Response(
-                {"error": "email과 password를 다시 확인하세요."},
+                {"error": "유효하지 않은 email과 password 조합입니다."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
