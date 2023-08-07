@@ -5,6 +5,8 @@ from .models import User
 
 @admin.register(User)
 class CustomUserAdmin(UserAdmin):
+    list_display = ("email", "password")
+
     fieldsets = (
         (
             "Profile",
