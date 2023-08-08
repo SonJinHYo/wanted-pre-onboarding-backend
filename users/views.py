@@ -25,7 +25,7 @@ class SignIn(APIView):
         if serializer.is_valid():
             user = serializer.save()
             serializer = serializers.UserSerializer(user)
-            return Response("회원가입 완료", status=status.HTTP_200_OK)
+            return Response("회원가입 완료", status=status.HTTP_201_CREATED)
         else:
             return Response(
                 "회원가입 실패. 패스워드가 8자 미만이거나 이미 이미 존재하는 email입니다.",

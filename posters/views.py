@@ -9,11 +9,13 @@ from rest_framework.response import Response
 
 
 from . import serializers
-from .models import Content
+from .models import Content, Poster
 from users.models import User
 
+from django.conf import settings
 
-class Posters(APIView):
+
+class CreatePosters(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
@@ -50,3 +52,20 @@ class Posters(APIView):
                 "제목과 내용의 길이를 확인해주세요.(제목 100자 이하, 내용 1000자 이하)",
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
+
+class Posters(APIView):
+    def get(self, request):
+        try:
+            page = int(request.query_params.get("page", 1))
+        except ValueError:
+            page = 1
+        page_size = settings.PAGE_SIZE
+        start, end = (page - 1) * page_size, page * page_size
+
+        serializer = serializers.PosterListSerializer(
+            Poster.objects.all()[start:end],
+            many=True,
+        )
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
