@@ -49,7 +49,7 @@ class CreatePosters(APIView):
             )
         else:
             return Response(
-                "제목과 내용의 길이를 확인해주세요.(제목 100자 이하, 내용 1000자 이하)",
+                {"meesage": "제목과 내용의 길이를 확인해주세요.(제목 100자 이하, 내용 1000자 이하)"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -82,3 +82,33 @@ class PosterDetail(APIView):
         poster = self.get_object(pk)
         serializer = serializers.PosterDetailSerializer(poster)
         return Response(serializer.data)
+
+    def put(self, request, pk):
+        poster = self.get_object(pk)
+        if poster.user == request.user:
+            content = poster.contents
+            print(content)
+            print(type(content))
+            content_serializer = serializers.ConetentSerializer(
+                content,
+                data={
+                    "content": request.data["content"],
+                },
+                partial=True,
+            )
+            if content_serializer.is_valid():
+                poster.updated_at = timezone.now()
+                with transaction.atomic():
+                    content_serializer.save()
+                    poster.save()
+                return Response(
+                    serializers.PosterDetailSerializer(poster).data,
+                    status=status.HTTP_200_OK,
+                )
+            else:
+                return Response(
+                    {"message": "게시물 내용의 길이를 확인해주세요. (1000자 이하)"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+        else:
+            raise exceptions.AuthenticationFailed("권한이 없습니다.")
