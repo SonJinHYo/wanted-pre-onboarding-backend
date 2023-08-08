@@ -76,7 +76,7 @@ class PosterDetail(APIView):
         try:
             return Poster.objects.get(pk=pk)
         except Poster.DoesNotExist:
-            raise exceptions.NotFound
+            raise exceptions.NotFound("존재하지 않는 게시글입니다.")
 
     def get(self, request, pk):
         poster = self.get_object(pk)
@@ -85,28 +85,49 @@ class PosterDetail(APIView):
 
     def put(self, request, pk):
         poster = self.get_object(pk)
-        if poster.user == request.user:
-            contents = poster.contents
-            contents_serializer = serializers.ConetentSerializer(
-                contents,
-                data={
-                    "text": request.data["content"],
-                },
-                partial=True,
-            )
-            if contents_serializer.is_valid():
-                poster.updated_at = timezone.now().replace(microsecond=0)
-                with transaction.atomic():
-                    contents_serializer.save()
-                    poster.save()
-                return Response(
-                    serializers.PosterDetailSerializer(poster).data,
-                    status=status.HTTP_200_OK,
-                )
-            else:
-                return Response(
-                    {"message": "게시물 내용의 길이를 확인해주세요. (1000자 이하)"},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-        else:
+
+        if poster.user != request.user:
             raise exceptions.AuthenticationFailed("권한이 없습니다.")
+
+        text = request.data.get("content")
+        if text is None:
+            return Response(
+                {"message": "내용을 작성해주세요"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        contents = poster.contents
+        contents_serializer = serializers.ConetentSerializer(
+            contents,
+            data={"text": text},
+            partial=True,
+        )
+
+        if contents_serializer.is_valid():
+            with transaction.atomic():
+                contents_serializer.save()
+                poster.updated_at = timezone.now().replace(microsecond=0)
+                poster.save()
+
+            return Response(
+                serializers.PosterDetailSerializer(poster).data,
+                status=status.HTTP_200_OK,
+            )
+
+        else:
+            return Response(
+                {"message": "게시물 내용의 길이를 확인해주세요. (1000자 이하)"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+    def delete(self, request, pk):
+        poster = self.get_object(pk)
+
+        if poster.user != request.user:
+            raise exceptions.AuthenticationFailed("권한이 없습니다.")
+
+        poster.delete()
+        return Response(
+            {"message": "게시글이 삭제되었습니다."},
+            status=status.HTTP_204_NO_CONTENT,
+        )
