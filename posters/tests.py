@@ -8,7 +8,9 @@ from rest_framework import status
 from rest_framework.test import APIClient
 from .models import Poster, Content
 from users.models import User
+
 import os
+import time
 
 
 class CreatePostersAPITest(TestCase):
@@ -125,3 +127,76 @@ class PostersAPITest(TestCase):
                 self.assertEqual(len(response.data), self.page_size)
             else:
                 self.assertEqual(len(response.data), self.rem_page)
+
+
+class PosterDetailAPITest(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username=" ", email="testuser@example.com", password="securepassword"
+        )
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
+        self.poster = Poster.objects.create(
+            user=self.user,
+            title="Test Poster",
+            created_at=timezone.now().replace(microsecond=0),
+            updated_at=timezone.now().replace(microsecond=0),
+        )
+        self.content = Content.objects.create(
+            poster=self.poster,
+            text="Test Content",
+        )
+        self.url = reverse("poster_detail", args=[self.poster.pk])
+
+    def test_get_poster_detail(self):
+        response = self.client.get(self.url, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["title"], "Test Poster")
+
+    def test_update_poster_detail(self):
+        updated_content = "Updated Content"
+
+        response = self.client.put(
+            self.url,
+            {"content": updated_content},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["content"]["text"], updated_content)
+
+    def test_update_poster_detail_unauthorized(self):
+        other_user = User.objects.create_user(
+            username=" ", email="otheruser@example.com", password="testpassword"
+        )
+        self.client.force_authenticate(user=other_user)
+        response = self.client.put(
+            self.url,
+            {"content": "Updated Content"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_update_poster_detail_no_content(self):
+        response = self.client.put(self.url, {}, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data["message"], "내용을 작성해주세요")
+
+    def test_delete_poster_detail(self):
+        response = self.client.delete(self.url, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(Poster.objects.count(), 0)
+
+    def test_delete_poster_detail_unauthorized(self):
+        other_user = User.objects.create_user(
+            username="otheruser", email="otheruser@example.com", password="testpassword"
+        )
+        self.client.force_authenticate(user=other_user)
+        response = self.client.delete(self.url, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(Poster.objects.count(), 1)
