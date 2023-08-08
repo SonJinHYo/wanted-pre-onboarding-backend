@@ -28,8 +28,8 @@ class CreatePosters(APIView):
         poster_serializer = serializers.PosterSerializer(
             data={
                 "title": title,
-                "created_at": timezone.localtime(),
-                "updated_at": timezone.localtime(),
+                "created_at": timezone.localtime().replace(microsecond=0),
+                "updated_at": timezone.localtime().replace(microsecond=0),
             }
         )
 
@@ -38,7 +38,7 @@ class CreatePosters(APIView):
                 new_poster = poster_serializer.save(
                     user=user,
                 )
-                Content.objects.create(poster=new_poster, content=content)
+                Content.objects.create(poster=new_poster, text=content)
 
             return Response(
                 {
@@ -86,20 +86,18 @@ class PosterDetail(APIView):
     def put(self, request, pk):
         poster = self.get_object(pk)
         if poster.user == request.user:
-            content = poster.contents
-            print(content)
-            print(type(content))
-            content_serializer = serializers.ConetentSerializer(
-                content,
+            contents = poster.contents
+            contents_serializer = serializers.ConetentSerializer(
+                contents,
                 data={
-                    "content": request.data["content"],
+                    "text": request.data["content"],
                 },
                 partial=True,
             )
-            if content_serializer.is_valid():
-                poster.updated_at = timezone.now()
+            if contents_serializer.is_valid():
+                poster.updated_at = timezone.now().replace(microsecond=0)
                 with transaction.atomic():
-                    content_serializer.save()
+                    contents_serializer.save()
                     poster.save()
                 return Response(
                     serializers.PosterDetailSerializer(poster).data,

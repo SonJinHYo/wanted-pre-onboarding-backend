@@ -21,7 +21,7 @@ class PosterSerializer(ModelSerializer):
 class ConetentSerializer(ModelSerializer):
     class Meta:
         model = Content
-        fields = ("content",)
+        fields = ("text",)
 
 
 class PosterDetailSerializer(ModelSerializer):
