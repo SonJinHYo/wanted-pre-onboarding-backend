@@ -11,9 +11,6 @@ class Poster(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    def likes(self):
-        return self.likes.count()
-
 
 class Content(models.Model):
     poster = models.OneToOneField(
