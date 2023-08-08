@@ -12,7 +12,21 @@ import jwt
 
 # Create your views here.
 class SignIn(APIView):
+    """회원가입 APIView"""
+
     def post(self, request):
+        """회원가입 post 요청 처리
+
+        Parameters:
+            email (str) : 회원가입 email
+            password (str) : 회원가입 password
+
+        Raises:
+            exceptions.ParseError: email,password 누락으로 회원가입 실패시 에러
+
+        Returns:
+            Response: 회원가입 완료 또는 실패 메세지
+        """
         email = request.data.get("email")
         password = request.data.get("password")
 
@@ -32,13 +46,35 @@ class SignIn(APIView):
 
 
 class JWTLogIn(APIView):
+    """jwt로그인 APIView"""
+
     def generate_token(self, user):
+        """토큰 발행 함수
+
+        Args:
+            user (models.User): 인증된 유저 객체
+
+        Returns:
+            token (str): jwt토큰
+        """
         payload = {"pk": user.pk}
         key = settings.SECRET_KEY
         token = jwt.encode(payload=payload, key=key, algorithm="HS256")
         return token
 
     def post(self, request):
+        """jwt로그인 요청 처리 함수
+
+        Parameters:
+            email (str) : 로그인 email
+            password (str) : 로그인 password
+
+        Raises:
+            exceptions.ParseError: email,password 누락으로 로그인 실패시 에러
+
+        Returns:
+            Response : jwt토큰 또는 오류 응답
+        """
         email = request.data.get("email")
         password = request.data.get("password")
 
