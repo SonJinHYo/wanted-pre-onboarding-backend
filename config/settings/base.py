@@ -123,3 +123,9 @@ AUTH_USER_MODEL = "users.User"
 
 # Pagenation
 PAGE_SIZE = 5
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "config.authentication.JWTAuthentication",
+    ]
+}

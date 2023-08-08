@@ -1,15 +1,13 @@
-from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework import exceptions
 from rest_framework.response import Response
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate
 
-
+from django.conf import settings
 from . import serializers
 
 import jwt
-import os
 
 
 # Create your views here.
@@ -36,7 +34,7 @@ class SignIn(APIView):
 class JWTLogIn(APIView):
     def generate_token(self, user):
         payload = {"pk": user.pk}
-        key = os.environ.get("DJANGO_SECRET_KEY")
+        key = settings.SECRET_KEY
         token = jwt.encode(payload=payload, key=key, algorithm="HS256")
         return token
 
