@@ -32,7 +32,7 @@ class SignInTestCase(APITestCase):
                     "email": "test@example.com",
                     "password": "securepassword",
                 },
-                "expected_status": status.HTTP_200_OK,
+                "expected_status": status.HTTP_201_CREATED,
                 "expected_message": "회원가입 완료",
             },
             {
