@@ -18,6 +18,32 @@ class PosterSerializer(ModelSerializer):
         )
 
 
+class ConetentSerializer(ModelSerializer):
+    class Meta:
+        model = Content
+        fields = ("content",)
+
+
+class PosterDetailSerializer(ModelSerializer):
+    user = TinyUserSerializer(
+        read_only=True,
+    )
+    content = ConetentSerializer(
+        source="contents",
+        read_only=True,
+    )
+
+    class Meta:
+        model = Poster
+        fields = (
+            "user",
+            "title",
+            "content",
+            "created_at",
+            "updated_at",
+        )
+
+
 class PosterListSerializer(ModelSerializer):
     user = TinyUserSerializer(
         read_only=True,
@@ -30,9 +56,3 @@ class PosterListSerializer(ModelSerializer):
             "title",
             "updated_at",
         )
-
-
-class ConetentSerializer(ModelSerializer):
-    class Meta:
-        model = Content
-        fields = ("content",)

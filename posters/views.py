@@ -69,3 +69,16 @@ class Posters(APIView):
         )
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class PosterDetail(APIView):
+    def get_object(self, pk):
+        try:
+            return Poster.objects.get(pk=pk)
+        except Poster.DoesNotExist:
+            raise exceptions.NotFound
+
+    def get(self, request, pk):
+        poster = self.get_object(pk)
+        serializer = serializers.PosterDetailSerializer(poster)
+        return Response(serializer.data)
