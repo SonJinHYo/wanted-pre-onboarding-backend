@@ -10,7 +10,6 @@ from rest_framework.response import Response
 
 from . import serializers
 from .models import Content, Poster
-from users.models import User
 
 from django.conf import settings
 
@@ -22,8 +21,9 @@ class CreatePosters(APIView):
         title = request.data.get("title")
         content = request.data.get("content")
         user = request.user
-        if not title or not content:
-            return exceptions.ParseError("제목과 내용을 모두 입력해주세요")
+
+        if title is None or content is None:
+            raise exceptions.ParseError("제목과 내용을 모두 입력해주세요")
 
         poster_serializer = serializers.PosterSerializer(
             data={
@@ -35,21 +35,27 @@ class CreatePosters(APIView):
 
         if poster_serializer.is_valid():
             with transaction.atomic():
-                new_poster = poster_serializer.save(
-                    user=user,
+                contents_serializer = serializers.ConetentSerializer(
+                    data={"text": content}
                 )
-                Content.objects.create(poster=new_poster, text=content)
+
+                if contents_serializer.is_valid():
+                    new_poster = poster_serializer.save(user=user)
+                    contents_serializer.save(poster=new_poster)
+
+                else:
+                    return Response(
+                        {"message": "내용의 길이를 확인해주세요.(1000자 이하)"},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
 
             return Response(
-                {
-                    "message": "게시글을 생성했습니다",
-                    "title": new_poster.title,
-                },
+                {"message": "게시글을 생성했습니다"},
                 status=status.HTTP_201_CREATED,
             )
         else:
             return Response(
-                {"meesage": "제목과 내용의 길이를 확인해주세요.(제목 100자 이하, 내용 1000자 이하)"},
+                {"message": "제목의 길이를 확인해주세요.(100자 이하)"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
