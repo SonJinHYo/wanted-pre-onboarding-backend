@@ -19,7 +19,7 @@ class SignIn(APIView):
         password = request.data.get("password")
 
         if not email or not password:
-            raise exceptions.ParseError
+            raise exceptions.ParseError("email과 password를 모두 입력해주세요.")
 
         serializer = serializers.UserSerializer(data=request.data)
         if serializer.is_valid():

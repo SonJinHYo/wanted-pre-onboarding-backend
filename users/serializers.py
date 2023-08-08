@@ -19,3 +19,9 @@ class UserSerializer(ModelSerializer):
         new_user.save()
 
         return new_user
+
+
+class TinyUserSerializer(ModelSerializer):
+    class Meta:
+        model = User
+        fields = ("email",)

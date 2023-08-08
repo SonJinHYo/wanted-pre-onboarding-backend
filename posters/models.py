@@ -8,8 +8,8 @@ class Poster(models.Model):
         related_name="posters",
     )
     title = models.CharField(max_length=50)
-    created_at = models.DateTimeField()
-    updated_at = models.DateTimeField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def likes(self):
         return self.likes.count()
