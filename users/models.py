@@ -15,7 +15,7 @@ class User(AbstractUser):
     )
     password = models.CharField(
         max_length=128,
-        validators=[MinLengthValidator],
+        validators=[MinLengthValidator(8)],
     )
 
     USERNAME_FIELD = "email"

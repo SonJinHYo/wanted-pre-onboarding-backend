@@ -5,10 +5,13 @@ services:
     build: ./
     ports:
       - "8000:8000"
+    environment:
+      - DJANGO_SETTINGS_MODULE=config.settings.local
     env_file:
       - .env
 
   nginx:
+    container_name: nginx
     build:
       context: .
       dockerfile: nginx_Dockerfile
