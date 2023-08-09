@@ -1,0 +1,11 @@
+.env
+.dockerignore
+.venv
+.gitignore
+.gitmessage.txt
+
+Dockerfile
+docker-compose.yaml
+README.md
+poetry.lock
+pyproject.otml
