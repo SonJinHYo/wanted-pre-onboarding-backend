@@ -1,9 +1,9 @@
 FROM python:3.9-alpine
 
 # RUN ["apk", "update", "&&", "apk", "add", "--no-cache", "gcc", "libc-dev", "&&", "pip", "install", "--upgrade", "pip"]
-RUN ["apk", "update"]
-RUN ["apk", "add", "--no-cache", "gcc", "libc-dev"]
 RUN ["pip", "install", "--upgrade", "pip"]
+RUN ["apk", "update"]
+RUN ["apk", "add", "--no-cache", "gcc","musl-dev", "libffi-dev","openssl-dev","mariadb-dev"]
 
 
 WORKDIR /app
