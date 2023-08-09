@@ -12,9 +12,7 @@ services:
 
   nginx:
     container_name: nginx
-    build:
-      context: .
-      dockerfile: nginx_Dockerfile
+    build: ./nginx
     ports:
       - "80:80"
     depends_on:
