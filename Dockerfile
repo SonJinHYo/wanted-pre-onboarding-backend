@@ -18,5 +18,16 @@ ARG DEFAULT_PORT=8000
 
 EXPOSE ${DEFAULT_PORT}
 
-CMD ["gunicorn","-c","gunicorn_conf.py","config.wsgi:application"]
+
+COPY build.sh /build.sh
+RUN chmod +x /build.sh
+
+ENTRYPOINT ["/build.sh"]
+
+# CMD ["python3","manage.py","makemigrations","--settings=config.settings.local"]
+# CMD ["python3","manage.py","migrate","--settings=config.settings.local"]
+
+# CMD ["python3","manage.py","runserver","0.0.0.0:8000","--settings=config.settings.local"]
+
+# CMD ["gunicorn","-c","gunicorn_conf.py","config.wsgi:application"]
 
