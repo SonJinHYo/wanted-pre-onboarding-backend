@@ -11,7 +11,7 @@ import jwt
 
 
 # Create your views here.
-class SignIn(APIView):
+class SignUp(APIView):
     """회원가입 APIView"""
 
     def post(self, request):
@@ -45,7 +45,7 @@ class SignIn(APIView):
             )
 
 
-class JWTLogIn(APIView):
+class SignIn(APIView):
     """jwt로그인 APIView"""
 
     def generate_token(self, user):

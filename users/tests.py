@@ -25,7 +25,7 @@ class SignInTestCase(APITestCase):
         if expected_message is not None:
             self.assertEqual(response.data, expected_message)
 
-    def test_signup(self):
+    def test_signin(self):
         test_cases = [
             {
                 "data": {
@@ -69,10 +69,10 @@ class SignInTestCase(APITestCase):
                 )
 
 
-class JWTLogInTestCase(APITestCase):
+class SignInTestCase(APITestCase):
     def setUp(self):
         self.client = APIClient()
-        self.url = reverse("jwtlogin")
+        self.url = reverse("signin")
         self.user = User.objects.create_user(
             username=" ",
             email="test@example.com",
@@ -80,7 +80,7 @@ class JWTLogInTestCase(APITestCase):
         )
         self.django_key = os.environ.get("DJANGO_SECRET_KEY")
 
-    def test_successful_login(self):
+    def test_successful_sign_in(self):
         data = {
             "email": "test@example.com",
             "password": "securepassword",
@@ -90,7 +90,7 @@ class JWTLogInTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn("token", response.data)
 
-    def test_failed_login(self):
+    def test_failed_sign_in(self):
         data = {
             "email": "test@example.com",
             "password": "wrongpassword",
