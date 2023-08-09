@@ -15,9 +15,29 @@ from django.conf import settings
 
 
 class CreatePosters(APIView):
+    """게시글(Poster) 생성 APIView
+
+    Parameters:
+        permission_classes: 유저 로그인(권한) 확인
+
+    """
+
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
+        """게시글 생성 post 요청 처리 함수
+
+        Parameters:
+            title (str): 게시글 제목
+            content (str): 게시글 내용
+            user (users.models.User) : 로그인한 유저 객체
+
+        Raises:
+            exceptions.ParseError: title 또는 content 누락 에러
+
+        Returns:
+            Response: 게시물()
+        """
         title = request.data.get("title")
         content = request.data.get("content")
         user = request.user
@@ -61,7 +81,19 @@ class CreatePosters(APIView):
 
 
 class Posters(APIView):
+    """전체 포스터 APIView"""
+
     def get(self, request):
+        """전체 포스터 pagination view. Content 쿼리 X
+
+        Parameters:
+            page (int): api 파라미터로 받는 페이지 수
+            start (int): Poster 객체 슬라이싱 시작 인덱스
+            end (int): Poster 객체 슬라이싱 마지막 인덱스
+
+        Returns:
+            Response: 페이지에 따른 Poster객체 반환
+        """
         try:
             page = int(request.query_params.get("page", 1))
         except ValueError:
@@ -78,18 +110,40 @@ class Posters(APIView):
 
 
 class PosterDetail(APIView):
+    """특정 Poster APIView
+
+    Args:
+        pk (int): api로 받는 특정 Poster의 pk값
+
+    """
+
     def get_object(self, pk):
+        """특정 Poster 객체 반환 함수"""
         try:
             return Poster.objects.get(pk=pk)
         except Poster.DoesNotExist:
             raise exceptions.NotFound("존재하지 않는 게시글입니다.")
 
     def get(self, request, pk):
+        """pk에 해당하는 Poster get 요청 처리"""
         poster = self.get_object(pk)
         serializer = serializers.PosterDetailSerializer(poster)
         return Response(serializer.data)
 
     def put(self, request, pk):
+        """pk에 해당하는 Poster post 요청 처리
+
+        Parameters:
+            poster (models.Poster): pk에 해당하는 poster객체
+            contents (models.Content): pk에 해당하는 poster객체의 Contents 객체
+            text (str): contents 객체의 내용(게시글의 본문)
+
+        Raises:
+            exceptions.AuthenticationFailed: 게시글 주인이 아닐시 예외 처리
+
+        Returns:
+            Response: 수정된 게시글 반환
+        """
         poster = self.get_object(pk)
 
         if poster.user != request.user:
@@ -127,6 +181,17 @@ class PosterDetail(APIView):
             )
 
     def delete(self, request, pk):
+        """pk에 해당하는 Poster delete 요청 처리
+
+        Parameters:
+            poster (models.Poster): pk에 해당하는 poster객체
+
+        Raises:
+            exceptions.AuthenticationFailed: 게시글 주인이 아닐시 예외 처리
+
+        Returns:
+            Response: 삭제 메세지 반환
+        """
         poster = self.get_object(pk)
 
         if poster.user != request.user:

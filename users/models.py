@@ -4,6 +4,7 @@ from django.core.validators import MinLengthValidator
 
 
 class User(AbstractUser):
+    # 관리자 계정에 설정된 username 테이블 처리를 위한 필드
     username = models.CharField(
         blank=True,
         null=True,

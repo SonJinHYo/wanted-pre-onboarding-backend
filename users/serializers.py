@@ -3,6 +3,8 @@ from .models import User
 
 
 class UserSerializer(ModelSerializer):
+    # 회원가입, 로그인 시 사용
+
     class Meta:
         model = User
         fields = (
@@ -11,6 +13,8 @@ class UserSerializer(ModelSerializer):
         )
 
     def create(self, validated_data):
+        # 암호화
+
         password = validated_data.pop("password", None)
         new_user = self.Meta.model(**validated_data)
 
@@ -22,6 +26,8 @@ class UserSerializer(ModelSerializer):
 
 
 class TinyUserSerializer(ModelSerializer):
+    # 공개가능한 유저 정보 필요시 사용
+
     class Meta:
         model = User
         fields = ("email",)

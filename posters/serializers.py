@@ -4,6 +4,8 @@ from users.serializers import TinyUserSerializer
 
 
 class PosterSerializer(ModelSerializer):
+    # 포스터 생성시 사용
+
     user = TinyUserSerializer(
         read_only=True,
     )
@@ -19,12 +21,16 @@ class PosterSerializer(ModelSerializer):
 
 
 class ConetentSerializer(ModelSerializer):
+    # contents(게시글 내용) 필요시 사용
+
     class Meta:
         model = Content
         fields = ("text",)
 
 
 class PosterDetailSerializer(ModelSerializer):
+    # 특정 Poster 접근 시 사용
+
     user = TinyUserSerializer(
         read_only=True,
     )
@@ -45,6 +51,8 @@ class PosterDetailSerializer(ModelSerializer):
 
 
 class PosterListSerializer(ModelSerializer):
+    # 게시글 목록을 불러올 때 사용
+
     user = TinyUserSerializer(
         read_only=True,
     )
