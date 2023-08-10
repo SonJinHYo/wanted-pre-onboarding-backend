@@ -8,4 +8,4 @@ Dockerfile
 docker-compose.yaml
 README.md
 poetry.lock
-pyproject.otml
+pyproject.toml

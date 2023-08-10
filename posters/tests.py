@@ -44,15 +44,6 @@ class CreatePostersAPITest(TestCase):
         response = self.client.post(self.url, data2, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-    # def test_create_poster_missing_fields(self):
-    #     data = {"title": "Test Title"}
-    #     with self.assertRaises(exceptions.ParseError):
-    #         self.client.post(
-    #             self.url,
-    #             data,
-    #             format="json",
-    #         )
-
     def test_create_poster_title_max_length(self):
         data = {
             "title": "A" * 101,

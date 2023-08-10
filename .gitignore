@@ -1,5 +1,5 @@
 .gitmessage.txt
-*.conf
+# *.conf
 staticfiles
 
 # Byte-compiled / optimized / DLL files
@@ -124,7 +124,7 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
+# .env
 .venv
 env/
 venv/
