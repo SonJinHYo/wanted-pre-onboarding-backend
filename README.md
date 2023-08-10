@@ -1,6 +1,7 @@
 ﻿# wanted-pre-onboarding-backend
  
 안녕하세요 원티드 프리온보딩 백엔드 인턴십으로 지원한 손진효입니다.
+<br/><br/><br/><br/><br/>
 
 ## 애플리케이션 실행 방법
 django 컨테이너와 nginx 컨테이너를 실행합니다. nginx의 dockerfile과 설정 파일은 nginx 폴더에 있습니다.
@@ -16,7 +17,7 @@ django 컨테이너와 nginx 컨테이너를 실행합니다. nginx의 dockerfil
 이후 배포된 버전에서는 MySQL8.0을 사용하고 있습니다.**
 <br/><br/>
 ### 배포한 어플리케이션 주소
-- http://15.164.170.30/
+- http://43.201.0.119
 <br/><br/>
 ### 엔드포인트 호출
 백엔드밖에 없고 개발이 이어지지 않지만 관례상 api, v1을 작성했습니다.
@@ -35,6 +36,7 @@ django 컨테이너와 nginx 컨테이너를 실행합니다. nginx의 dockerfil
 
 <br/><br/><br/><br/><br/>
 ## API 동작 데모 영상 링크
+AWS로 배포한 주소로 진행했습니다.
 
 <br/><br/><br/><br/><br/>
 ## 구현 방법 설명
@@ -145,7 +147,8 @@ http {
 
 ECS와 RDS를 이용하여 간단한 구조로 배포했습니다.
 
-- ECS 클러스터를 생성하고 내에 nginx, django 컨테이너를 포함하는 Task를 생성했습니다.
+- ECS 클러스터를 생성하고 내에 nginx, django 컨테이너를 포함하는 Fargate Task를 생성했습니다.
+  - Task : 0.5 vCPU, 1GB Memory / Fargate 유형 / Public IP : 43.201.0.119
   - Application ELB로 serives내의 task를 관리하게하여 무중단 배포 구조를 만들 수 있지만 애플리케이션 스케일에 비해 과한 감이 있어 단일 Task로 배포하게 되었습니다. (이에 Public IP가 임의로 배정되기에 django.settings.prod에 ALLOWED_HOST를 와일드카드로 해두었습니다.)
   - Task의 이미지를 DockerHub 개인 레포지토리와 연결하여 로컬에서 업데이트 후 Task를 재배포하면 수정없이 원할한 배포가 가능합니다.
 - RDS로 MySQL 데이터베이스를 생성했습니다.
