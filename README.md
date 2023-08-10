@@ -106,7 +106,7 @@ http {
 <br/><br/>
 ### unit test
 테스트 목록입니다
-- users/test.py
+- 파일 위치 : users/test.py
   - 회원가입
     - 정상 데이터
     - 패스워드 누락
@@ -116,7 +116,7 @@ http {
     - 정상 데이터
     - 패스워드 틀림
     - 패스워드 누락
-- posters/test
+- 파일 위치 : posters/test
   - 포스터 생성
     - 정상 데이터
     - 제목 최대 길이 초과
