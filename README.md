@@ -36,8 +36,8 @@ django 컨테이너와 nginx 컨테이너를 실행합니다. nginx의 dockerfil
 
 <br/><br/><br/><br/><br/>
 ## API 동작 데모 영상 링크
-AWS로 배포한 주소로 진행했습니다.
- 링크 : https://youtu.be/uYBaPCEVH1g
+AWS로 배포한 주소로 진행했습니다. 
+-  링크 : https://youtu.be/uYBaPCEVH1g
 
 <br/><br/><br/><br/><br/>
 ## 구현 방법 설명
